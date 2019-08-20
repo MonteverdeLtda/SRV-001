@@ -1,0 +1,122 @@
+#include <Wire.h> 
+#include "RTClib.h"
+#include <LiquidCrystal_I2C.h>
+#include <SimpleDHT.h>
+LiquidCrystal_I2C lcd(0x27,16,2);
+int pinDHT11 = 9;
+SimpleDHT11 dht11;
+RTC_DS1307 RTC;
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+int PULSADOR = 2; 
+int LED=3; 
+int ESTADO=LOW; 
+
+void setup(){ 
+  pinMode(PULSADOR, INPUT); 
+  pinMode(LED, OUTPUT); 
+  digitalWrite(LED, LOW);
+  
+  Wire.begin(); // Inicia el puerto I2C 
+  RTC.begin(); // Inicia la comunicaci¢n con el RTC
+  Serial.begin(9600); // Establece la velocidad de datos del puerto serie
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+}
+
+void loop (){
+  InfoDev();
+  while(digitalRead(PULSADOR) == LOW){  // espera infinitamente hasta que se presione el pulsador
+    
+  }
+  ESTADO = digitalRead(LED);    // leo estado del LED para saber si esta encendido o apagado
+  digitalWrite(LED, !ESTADO);     // escribo en la salida el valor apuesto al leido con anterioridad
+  
+  
+  while(digitalRead(ESTADO) == HIGH){   // espera como funcion antirebote simple
+    StandBy();
+  }
+}
+
+void refrescarDHT(){
+  limpiarLCD();
+  byte temperature = 0;
+  byte humidity = 0;
+  int err = SimpleDHTErrSuccess;
+  //This bit will tell our Arduino what to do if there is some sort of an error at getting readings from our sensor
+  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+    Serial.print("No reading , err=");
+    Serial.println(err);
+    delay(1000);
+    return;
+  }
+  Serial.print("yw: ");
+  Serial.print(temperature); Serial.print(" Celcius, ");
+  Serial.print((int)humidity); Serial.println(" %");
+  
+  limpiarLCD();
+  lcd.setCursor(0,0);
+  lcd.print("Temperatura: ");
+  lcd.print(temperature);
+  lcd.setCursor(0,1);
+  lcd.print("Humedad (%): ");
+  lcd.print((int)humidity);
+  delay(2000);
+}
+
+void limpiarLCD(){
+  lcd.clear();
+}
+
+void StandBy(){
+    refrescarReloj();
+    refrescarReloj();
+    refrescarDHT();
+  if(LED == HIGH){
+  }else{
+    InfoDev();
+    Serial.print(ESTADO);
+  }
+}
+
+void InfoDev(){
+  limpiarLCD();
+  lcd.setCursor(0,0);
+  lcd.print("Monteverde LTDA");
+  lcd.setCursor(0,1);
+  lcd.print("FelipheGomez.");
+  delay(1000);
+}
+
+void refrescarReloj(){
+  limpiarLCD();
+  DateTime now = RTC.now(); // Obtiene la fecha y hora del RTC
+  Serial.print(now.year(), DEC); // A§o
+  Serial.print('/');
+  Serial.print(now.month(), DEC); // Mes
+  Serial.print('/');
+  Serial.print(now.day(), DEC); // Dia
+  Serial.print(' ');
+  Serial.print(now.hour(), DEC); // Horas
+  Serial.print(':');
+  Serial.print(now.minute(), DEC); // Minutos
+  Serial.print(':');
+  Serial.print(now.second(), DEC); // Segundos
+  Serial.println();
+  lcd.setCursor(0,0);
+  lcd.print("Dia:   ");
+  lcd.print(now.year(), DEC);
+  lcd.print("/");
+  lcd.print(now.month(), DEC);
+  lcd.print("/");
+  lcd.print(now.day(), DEC);
+  lcd.print(" ");
+  lcd.setCursor(0,1);
+  lcd.print("Hora:  ");
+  lcd.print(now.hour(), DEC);
+  lcd.print(":");
+  lcd.print(now.minute(), DEC);
+  lcd.print(":");
+  lcd.print(now.second(), DEC);
+  delay(1000); // La informaci¢n se actualiza cada 1 seg.
+}
