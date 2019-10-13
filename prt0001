@@ -1,25 +1,16 @@
 /*
 #####################################################################################
-#    File:               Arduino_Watering_sustem.ino                                             
-#       Processor:          Arduino UNO, MEGA ou Teensy++ 2.0      
-#   Language:     Wiring / C /Processing /Fritzing / Arduino IDE          
-#           
-# Objectives:         Watering System - Irrigation
-#                     
-# Behavior:     When the soil is dry,
-#                           
-#
+#  File:               Arduino_Watering_system_DOMO.ino                                             
+#  Processor:          Arduino UNO, MEGA ou Teensy++ 2.0
+#  Language:           Wiring / C /Processing /Fritzing / Arduino IDE          
+#  Objectives:         Watering System - Irrigation Modular
 #     
-#   Author:                 Marcelo Moraes 
-#   Date:                   12/10/12  
-#   place:                  Brazil, Sorocaba City 
+#   Author:            Andres Felipe Gomez Maya
+#   Date:              13/10/2019
+#   place:             Medellin, Colombia
 #         
-#####################################################################################
- 
-  This project contains public domain code.
-  The modification is allowed without notice.
-  
- */
+##################################################################################### 
+*/
 
 // libraries definition
 #include <Wire.h>
