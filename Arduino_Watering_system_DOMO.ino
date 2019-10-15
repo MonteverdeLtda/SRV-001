@@ -1,15 +1,13 @@
 /*
-#####################################################################################
+#########################################################
 #  File:               Arduino_Watering_system_DOMO.ino                                             
 #  Processor:          Arduino UNO, MEGA ou Teensy++ 2.0
 #  Language:           Wiring / C /Processing /Fritzing / Arduino IDE          
 #  Objectives:         Watering System - Irrigation Modular
-#     
 #   Author:            Andres Felipe Gomez Maya
 #   Date:              13/10/2019
 #   place:             Medellin, Colombia
-#         
-#####################################################################################
+#########################################################
   http://www.rinkydinkelectronics.com/library.php?id=5
 */
 #include <Wire.h>
@@ -42,9 +40,6 @@ int RTC_RST = 2;          // Pin 2 - RST modulo RTC
 
 // Inicializacion del modulo
 DS1302 RTC(RTC_RST, RTC_DAT, RTC_CLK); // RST, DAT, CLK
-
-String daysOfTheWeek[7] = { "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado" };
-String monthsNames[12] = { "Enero", "Febrero", "Marzo", "Abril", "Mayo",  "Junio", "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre" };
 
 // system status
 const char *system_status_list[] =
@@ -89,10 +84,8 @@ void setup(){
   pinMode(pinVCC_BT, OUTPUT);         // cuando se alimente de aqui
   // digitalWrite(pinForceAT, HIGH);   //  Forzar AT para configuracion BT
   delay(500);                         // Espera antes de encender el modulo
-  
   Wire.begin(); // Se inicial la interfaz I2c
   Serial.begin(9600);                 // comunicacion de monitor serial a 9600 bps
-  
   setStatus(3);
   digitalWrite(pinVCC_BT, HIGH);     // Enciende el modulo BT
   BT1.begin(38400);                  // comunicacion serie entre Arduino y el modulo a 38400 bps
@@ -128,11 +121,9 @@ void setStatus(int statusInt){
 }
 
 void loop(){
-  //delay(1000);
   horaActual = RTC.getTimeStr(FORMAT_LONG); // Invia giorno della settimana
   fechaActual = RTC.getDateStr(FORMAT_BIGENDIAN); // Invia giorno della settimana
   t = RTC.getTime();
-  // mostrarDatos(RTC.getTimeStr());
   
   if (BT1.available()){ recibeInfo(BT1.readString()); } // si hay informacion disponible desde modulo
   if (Serial.available()){ recibeInfo(Serial.readString()); } // si hay informacion disponible desde el monitor serial
@@ -186,7 +177,7 @@ void loop(){
     
     mostrarDatos("*x" + horaActual + "*");
     mostrarDatos("*y" + fechaActual + "*");
-    delay(250);
+    delay(150);
   }
   // Reiniciar
   if(flag >= interval){ flag = 0; } else {
