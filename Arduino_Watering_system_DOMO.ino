@@ -166,18 +166,17 @@ void loop(){
   // Serial.println(analogRead(pinH_FC));
   // Serial.println((valorHumedad));
   
+  mostrarDatos("*x" + horaActual + "*");
   if(flag == interval){
     if((int) valorHumedad > 0){
        mostrarDatos(FC_humidity);
     }
     mostrarDatos("*z" + system_status + "*"); // escribe en el monitor el nuevo estado
+    mostrarDatos("*y" + fechaActual + "*");
   }
   if(flag == interval || flag == (interval/2)){
     mostrarDatos("*LR" + String(LED_PWI[0]) + "G" + String(LED_PWI[1]) + "B" + String(LED_PWI[2]) + "*");
     
-    mostrarDatos("*x" + horaActual + "*");
-    mostrarDatos("*y" + fechaActual + "*");
-    delay(150);
   }
   // Reiniciar
   if(flag >= interval){ flag = 0; } else {
