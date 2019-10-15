@@ -1,6 +1,6 @@
 /*
 #########################################################
-#  File:               Arduino_Watering_system_DOMO.ino                                             
+#  File:               Arduino_Watering_system_DOMO .ino                                             
 #  Processor:          Arduino UNO, MEGA ou Teensy++ 2.0
 #  Language:           Wiring / C /Processing /Fritzing / Arduino IDE          
 #  Objectives:         Watering System - Irrigation Modular
@@ -80,7 +80,7 @@ Time t;
 
 void setup(){
   setStatus(0);
-  pinMode(pinForceAT, OUTPUT);        // Al poner en HIGH forzaremos el modo AT
+  pinMode(pinForceAT, OUTPUT);        // Al poner/2 en HIGH forzaremos el modo AT
   pinMode(pinVCC_BT, OUTPUT);         // cuando se alimente de aqui
   // digitalWrite(pinForceAT, HIGH);   //  Forzar AT para configuracion BT
   delay(500);                         // Espera antes de encender el modulo
@@ -121,9 +121,16 @@ void setStatus(int statusInt){
 }
 
 void loop(){
-  horaActual = RTC.getTimeStr(FORMAT_LONG); // Invia giorno della settimana
-  fechaActual = RTC.getDateStr(FORMAT_BIGENDIAN); // Invia giorno della settimana
+  delay(500);
+  if(horaActual != RTC.getTimeStr(FORMAT_LONG)){
+    horaActual = RTC.getTimeStr(FORMAT_LONG); // Invia giorno della settimana
+    mostrarDatos("*x" + horaActual + "*");
+  }
+  if(fechaActual != RTC.getDateStr(FORMAT_LONG)){
+    fechaActual = RTC.getDateStr(FORMAT_BIGENDIAN); // Invia giorno della settimana
+  }
   t = RTC.getTime();
+  
   
   if (BT1.available()){ recibeInfo(BT1.readString()); } // si hay informacion disponible desde modulo
   if (Serial.available()){ recibeInfo(Serial.readString()); } // si hay informacion disponible desde el monitor serial
@@ -146,6 +153,7 @@ void loop(){
     analogWrite(Green_LED_Pin, Green_value);
     analogWrite(Blue_LED_Pin, Blue_value);
   }
+  
   if ((err = dht22.read(pinDTH, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
     // Serial.print("No reading , err=");
     // Serial.println(err);
@@ -153,6 +161,7 @@ void loop(){
     delay(100);
     return;
   } else { DTH_Enabled = 1; }
+  
   if(DTH_Enabled == 1){
     DTH_temperature = ("*T"+String(temperature)+"*");
     DTH_humidity = ("*H"+String((int)humidity)+"*");
@@ -161,23 +170,23 @@ void loop(){
       mostrarDatos(DTH_humidity);
     }
   }
+  
   valorHumedad = map(analogRead(pinH_FC), 0, 1023, 100, 0);
   FC_humidity = ("*S"+String(valorHumedad)+"*");
-  // Serial.println(analogRead(pinH_FC));
-  // Serial.println((valorHumedad));
   
-  mostrarDatos("*x" + horaActual + "*");
   if(flag == interval){
     if((int) valorHumedad > 0){
        mostrarDatos(FC_humidity);
+       // delay(150);
     }
     mostrarDatos("*z" + system_status + "*"); // escribe en el monitor el nuevo estado
+    // delay(150);
     mostrarDatos("*y" + fechaActual + "*");
-  }
-  if(flag == interval || flag == (interval/2)){
+    // delay(150);
     mostrarDatos("*LR" + String(LED_PWI[0]) + "G" + String(LED_PWI[1]) + "B" + String(LED_PWI[2]) + "*");
-    
+    // delay(150);
   }
+  
   // Reiniciar
   if(flag >= interval){ flag = 0; } else {
     flag = flag+1;
